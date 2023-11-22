@@ -82,6 +82,7 @@ async def create_access_token(user_data: Login ):
         raise invalid_exception
 
 
+
 def get_current_user(authorization: str = Depends(oauth2_scheme)):
     try:
         user = auth.get_account_info(authorization)
@@ -117,6 +118,12 @@ async def get_shuttle_location(user: dict = Depends(get_current_user), token: st
 async def get_shuttle_location_by_id(uid: str):
     shuttle_location_data = db.child("ShuttleData").child(uid).get()
     return JSONResponse(status_code=200, content={"message": "Lokasi shuttle berhasil dilacak", "data": shuttle_location_data.val()})
+
+#check session with get  account info
+@app.get("/check-session/")
+async def check_session( user: dict = Depends(get_current_user), token: str = Depends(oauth2_scheme)):
+    return JSONResponse(status_code=200, content={"message": "Session valid", "data": user})
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="localhost", port=8000, reload=True)
