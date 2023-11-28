@@ -3,14 +3,14 @@ from pydantic import BaseModel
 class SignUp(BaseModel):
     email: str
     password: str
-    full_name: str
+    username: str
 
     class Config:
         schema_extra = {
             "example" : {
                 "email" : "sample",
                 "password" : "sample12345",
-                "full_name" : "Ex Sample"
+                "username" : "Ex Sample"
             }
         }
 

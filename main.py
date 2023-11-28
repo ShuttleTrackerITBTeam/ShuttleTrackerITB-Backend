@@ -49,13 +49,13 @@ def makeException(status_code, detail):
 async def create_an_account(user_data: SignUp):
     email = user_data.email
     password = user_data.password
-    full_name = user_data.full_name
+    username = user_data.username
     
 
     try:
         user = auth.create_user_with_email_and_password(email, password)
         uid = user["localId"]
-        data = {"full_name" : full_name, "email" : email}
+        data = {"username" : username, "email" : email}
         data_to_save = {"UsersData/" + uid : data}
         store_data = db.update(data_to_save, user["idToken"])
         if(store_data):
@@ -122,8 +122,8 @@ async def get_shuttle_location_by_id(uid: str):
 #check session with get  account info
 @app.get("/check-session/")
 async def check_session( user: dict = Depends(get_current_user), token: str = Depends(oauth2_scheme)):
-    return JSONResponse(status_code=200, content={"message": "Session valid", "data": user})
-
+    username = db.child("UsersData").child(user['users'][0]['localId']).child("username").get(token)
+    return JSONResponse(status_code=200, content={"message": "Session valid", "data": user, "username": username.val()})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="localhost", port=8000, reload=True)
