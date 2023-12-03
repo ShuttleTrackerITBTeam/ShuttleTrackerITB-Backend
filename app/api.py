@@ -4,7 +4,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from pyrebase import pyrebase
-from pydantic import BaseModel 
+from pydantic import BaseModel
+from os import getenv
 
 class SignUp(BaseModel):
     email: str
@@ -41,13 +42,13 @@ app = FastAPI(
 )
 # Use a service account.
 firebaseConfig = {
-  "apiKey": "AIzaSyBFXji0tc6nLJfv-NFcuKod-IHU-5jTZX8",
-  "authDomain": "esp32-firebase-demo-f2551.firebaseapp.com",
-  "databaseURL": "https://esp32-firebase-demo-f2551-default-rtdb.asia-southeast1.firebasedatabase.app",
-  "projectId": "esp32-firebase-demo-f2551",
-  "storageBucket": "esp32-firebase-demo-f2551.appspot.com",
-  "messagingSenderId": "578289339512",
-  "appId": "1:578289339512:web:079eab3e0cca5dc31ff18d"
+  "apiKey": getenv("apiKey"),
+    "authDomain": getenv("authDomain"),
+    "databaseURL": getenv("databaseURL"),
+    "projectId": getenv("projectId"),
+    "storageBucket": getenv("storageBucket"),
+    "messagingSenderId": getenv("messagingSenderId"),
+    "appId": getenv("appId")
 }
 
 app.add_middleware(
