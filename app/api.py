@@ -1,10 +1,10 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from pyrebase import pyrebase
 from pydantic import BaseModel
+from dotenv import load_dotenv
 from os import getenv
 
 class SignUp(BaseModel):
@@ -38,6 +38,8 @@ app = FastAPI(
     version="0.0.1",
     docs_url="/",
 )
+
+load_dotenv()
 # Use a service account.
 firebaseConfig = {
   "apiKey": getenv("apiKey"),
