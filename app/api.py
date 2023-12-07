@@ -1,23 +1,21 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from pyrebase import pyrebase
 from pydantic import BaseModel
+from dotenv import load_dotenv
 from os import getenv
 
 class SignUp(BaseModel):
     email: str
     password: str
-    username: str
 
     class Config:
         schema_extra = {
             "example" : {
                 "email" : "sample",
-                "password" : "sample12345",
-                "username" : "Ex Sample"
+                "password" : "sample12345"
             }
         }
 
@@ -40,6 +38,8 @@ app = FastAPI(
     version="0.0.1",
     docs_url="/",
 )
+
+load_dotenv()
 # Use a service account.
 firebaseConfig = {
   "apiKey": getenv("apiKey"),
@@ -74,13 +74,11 @@ def makeException(status_code, detail):
 async def create_an_account(user_data: SignUp):
     email = user_data.email
     password = user_data.password
-    username = user_data.username
-    
 
     try:
         user = auth.create_user_with_email_and_password(email, password)
         uid = user["localId"]
-        data = {"username" : username, "email" : email}
+        data = {"email" : email}
         data_to_save = {"UsersData/" + uid : data}
         store_data = db.update(data_to_save, user["idToken"])
         if(store_data):
@@ -100,7 +98,7 @@ async def create_access_token(user_data: Login ):
     try:
         user = auth.sign_in_with_email_and_password(email, password)
         
-        return {"access_token" : user["idToken"], "token_type" : "bearer"}
+        return {"access_token" : user["idToken"], "token_type" : "bearer", "email": email}
     
     except Exception as e:
         print("Error: ", e)
@@ -146,6 +144,7 @@ async def get_shuttle_location_by_id(uid: str):
 
 #check session with get  account info
 @app.get("/check-session/")
-async def check_session( user: dict = Depends(get_current_user), token: str = Depends(oauth2_scheme)):
-    username = db.child("UsersData").child(user['users'][0]['localId']).child("username").get(token)
-    return JSONResponse(status_code=200, content={"message": "Session valid", "data": user, "username": username.val()})
+async def check_session(user: dict = Depends(get_current_user)):
+    email = user['users'][0]['email']
+    formatted_email = email.split('@')[0][:8]
+    return JSONResponse(status_code=200, content={"message": "Session valid", "email": formatted_email})
