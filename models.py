@@ -3,14 +3,12 @@ from pydantic import BaseModel
 class SignUp(BaseModel):
     email: str
     password: str
-    username: str
 
     class Config:
         schema_extra = {
             "example" : {
                 "email" : "sample",
-                "password" : "sample12345",
-                "username" : "Ex Sample"
+                "password" : "sample12345"
             }
         }
 
@@ -26,3 +24,5 @@ class Login(BaseModel):
             }
         }
 
+class TokenData(BaseModel):
+    access_token: str
