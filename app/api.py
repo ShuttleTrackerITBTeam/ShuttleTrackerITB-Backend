@@ -39,18 +39,11 @@ app = FastAPI(
     docs_url="/",
 )
 
-# Use a service account.
+# Use a service account
 load_dotenv()
 
-with open('.env', 'r') as f:
-    lines = f.readlines()
-
-for line in lines:
-    if line.startswith('apiKey'):
-        apiKey = line.split('=')[1].strip()
-
 firebaseConfig = {
-    "apiKey": apiKey,
+    "apiKey": getenv("apiKey"),
     "authDomain": getenv("authDomain"),
     "databaseURL": getenv("databaseURL"),
     "projectId": getenv("projectId"),
